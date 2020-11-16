@@ -39,7 +39,7 @@ def plot_distance_and_expanded_wrt_weight_figure(
     # https://matplotlib.org/api/_as_gen/matplotlib.axes.Axes.plot.html
     # You can also Google for additional examples.
 
-    p1, = ax1.plot(weights, total_cost, '-b')  # TODO: pass the relevant params instead of `...`.
+    p1, = ax1.plot(weights, total_cost, '-b', label='Solution cost')  # TODO: pass the relevant params instead of `...`.
 
     # ax1: Make the y-axis label, ticks and tick labels match the line color.
     ax1.set_ylabel('Solution cost', color='b')
@@ -52,7 +52,7 @@ def plot_distance_and_expanded_wrt_weight_figure(
     # TODO: Plot the total expanded with ax2. Use `ax2.plot(...)`.
     # TODO: Make this curve colored red with solid line style.
     # TODO: Set its label to be '#Expanded states'.
-    p2, = ax2.plot(weights, total_nr_expanded, '-r')  # TODO: pass the relevant params instead of `...`.
+    p2, = ax2.plot(weights, total_nr_expanded, '-r', label='Expanded States')  # TODO: pass the relevant params instead of `...`.
 
     # ax2: Make the y-axis label, ticks and tick labels match the line color.
     ax2.set_ylabel('#Expanded states', color='r')
@@ -111,7 +111,7 @@ def toy_map_problem_experiments():
 
     # Ex.10
     # TODO: Just run it and inspect the printed result.
-    toy_map_problem = MapProblem(streets_map, 54, 549)
+    """toy_map_problem = MapProblem(streets_map, 54, 549)
     uc = UniformCost()
     res = uc.solve_problem(toy_map_problem)
     print(res)
@@ -143,13 +143,11 @@ def toy_map_problem_experiments():
     #     (upper in this file).
     #  3. Call here the function `run_astar_for_weights_in_range()`
     #     with `AirDistHeuristic` and `toy_map_problem`.
-    run_astar_for_weights_in_range(AirDistHeuristic, toy_map_problem)
-    exit()  # TODO: remove!
-
-
+    run_astar_for_weights_in_range(AirDistHeuristic, toy_map_problem)"""
 # --------------------------------------------------------------------
 # ---------------------------- MDA Problem ---------------------------
 # --------------------------------------------------------------------
+
 
 loaded_problem_inputs_by_size = {}
 loaded_problems_by_size_and_opt_obj = {}
@@ -181,6 +179,9 @@ def basic_mda_problem_experiments():
     # Ex.18
     # TODO: create an instance of `UniformCost`, solve the `small_mda_problem_with_distance_cost`
     #       with it and print the results.
+    uc = UniformCost()
+    res = uc.solve_problem(small_mda_problem_with_distance_cost)
+    print(res)
     exit()  # TODO: remove!
 
 

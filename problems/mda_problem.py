@@ -270,14 +270,15 @@ class MDAProblem(GraphProblem):
             You might find this tip useful for summing a slice of a collection.
         """
         #some code is over here
-        cost_type = self.optimization_objective
+        #could calc only needed optimization self.optimization objective
+
         dist = self.map_distance_finder.get_map_cost_between(prev_state.current_location, succ_state.current_location)
 
         test_travel = sum(i.nr_roommates for i in prev_state.tests_on_ambulance) * dist
 
         active_fridges = sum(i.nr_roommates for i in prev_state.tests_on_ambulance)/self.problem_input.ambulance.fridge_capacity
         active_fridges = int(active_fridges) if active_fridges == int(active_fridges) else int(active_fridges) + 1
-        fridges_gas_consumption = sum(self.problem_input.ambulance.fridges_gas_consumption_liter_per_meter[i] for i in range(active_fridges))  #should check if this needs to be sorted first from low to high
+        fridges_gas_consumption = sum(self.problem_input.ambulance.fridges_gas_consumption_liter_per_meter[i] for i in range(active_fridges))
         i_visit_lab = True if isinstance(succ_state.current_site, Laboratory) else False
         i_transfer = 1 if prev_state.tests_on_ambulance is not None else 0
         i_revisit = 1 if succ_state.current_site in prev_state.visited_labs else 0
@@ -298,7 +299,9 @@ class MDAProblem(GraphProblem):
          In order to create a set from some other collection (list/tuple) you can just `set(some_other_collection)`.
         """
         assert isinstance(state, MDAState)
-        return len(state.tests_on_ambulance) + len(state.tests_transferred_to_lab) == len(self.problem_input.reported_apartments)
+        #recheck
+        return len(state.tests_transferred_to_lab) == len(self.problem_input.reported_apartments) \
+            and isinstance(state.current_site, Laboratory)
 
 
     def get_zero_cost(self) -> Cost:
@@ -328,8 +331,6 @@ class MDAProblem(GraphProblem):
         """
         return [ap for ap in self.problem_input.reported_apartments if ap not in state.tests_on_ambulance and ap not in state.tests_transferred_to_lab]
 
-
-
     def get_all_certain_junctions_in_remaining_ambulance_path(self, state: MDAState) -> List[Junction]:
         """
         This method returns a list of junctions that are part of the remaining route of the ambulance.
@@ -340,4 +341,7 @@ class MDAProblem(GraphProblem):
             Use the method `self.get_reported_apartments_waiting_to_visit(state)`.
             Use python's `sorted(some_list, key=...)` function.
         """
-        raise NotImplementedError  # TODO: remove this line!
+        if isinstance(state.current_site, Junction):
+            return sorted([state.current_site] + [ap.location for ap in self.get_reported_apartments_waiting_to_visit(state)], key=lambda j: j.index)
+        return sorted([state.current_site.location] + [ap.location for ap in self.get_reported_apartments_waiting_to_visit(state)], key=lambda j: j.index)
+

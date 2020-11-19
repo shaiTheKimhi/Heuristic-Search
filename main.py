@@ -111,7 +111,7 @@ def toy_map_problem_experiments():
 
     # Ex.10
     # TODO: Just run it and inspect the printed result.
-    """toy_map_problem = MapProblem(streets_map, 54, 549)
+    toy_map_problem = MapProblem(streets_map, 54, 549)
     uc = UniformCost()
     res = uc.solve_problem(toy_map_problem)
     print(res)
@@ -143,7 +143,7 @@ def toy_map_problem_experiments():
     #     (upper in this file).
     #  3. Call here the function `run_astar_for_weights_in_range()`
     #     with `AirDistHeuristic` and `toy_map_problem`.
-    run_astar_for_weights_in_range(AirDistHeuristic, toy_map_problem)"""
+    run_astar_for_weights_in_range(AirDistHeuristic, toy_map_problem)
 # --------------------------------------------------------------------
 # ---------------------------- MDA Problem ---------------------------
 # --------------------------------------------------------------------
@@ -182,10 +182,10 @@ def basic_mda_problem_experiments():
     uc = UniformCost()
     res = uc.solve_problem(small_mda_problem_with_distance_cost)
     print(res)
-    exit()  # TODO: remove!
 
 
 def mda_problem_with_astar_experiments():
+
     print()
     print('Solve the MDA problem (moderate input, only distance objective, A*, '
           'MaxAirDist & SumAirDist & MSTAirDist heuristics).')
@@ -195,20 +195,32 @@ def mda_problem_with_astar_experiments():
     # Ex.22
     # TODO: create an instance of `AStar` with the `MDAMaxAirDistHeuristic`,
     #       solve the `moderate_mda_problem_with_distance_cost` with it and print the results.
-    exit()  # TODO: remove!
+    a_s = AStar(MDAMaxAirDistHeuristic)
+    res = a_s.solve_problem(moderate_mda_problem_with_distance_cost)
+    print(res)
+    # this re print is to nullify the effect of the usage of cache
+    #res = a_s.solve_problem(moderate_mda_problem_with_distance_cost)
+    #print(res)
+
 
     # Ex.25
     # TODO: create an instance of `AStar` with the `MDASumAirDistHeuristic`,
     #       solve the `moderate_mda_problem_with_distance_cost` with it and print the results.
-    exit()  # TODO: remove!
+    a_s2 = AStar(MDASumAirDistHeuristic)
+    res = a_s2.solve_problem(moderate_mda_problem_with_distance_cost)
+    print(res)
+
 
     # Ex.28
     # TODO: create an instance of `AStar` with the `MDAMSTAirDistHeuristic`,
     #       solve the `moderate_mda_problem_with_distance_cost` with it and print the results.
-    exit()  # TODO: remove!
+    a_s3 = AStar(MDAMSTAirDistHeuristic)
+    res = a_s3.solve_problem(moderate_mda_problem_with_distance_cost)
+    print(res)
 
 
 def mda_problem_with_weighted_astar_experiments():
+
     print()
     print('Solve the MDA problem (small & moderate input, only distance objective, wA*).')
 
@@ -219,13 +231,13 @@ def mda_problem_with_weighted_astar_experiments():
     # TODO: Call here the function `run_astar_for_weights_in_range()`
     #       with `MDAMSTAirDistHeuristic`
     #       over the `small_mda_problem_with_distance_cost`.
-    exit()  # TODO: remove!
+    run_astar_for_weights_in_range(MDAMSTAirDistHeuristic, small_mda_problem_with_distance_cost)
 
     # Ex.30
     # TODO: Call here the function `run_astar_for_weights_in_range()`
     #       with `MDASumAirDistHeuristic`
     #       over the `moderate_mda_problem_with_distance_cost`.
-    exit()  # TODO: remove!
+    run_astar_for_weights_in_range(MDASumAirDistHeuristic, moderate_mda_problem_with_distance_cost)
 
 
 def monetary_cost_objectives_mda_problem_experiments():
@@ -238,11 +250,15 @@ def monetary_cost_objectives_mda_problem_experiments():
     # Ex.32
     # TODO: create an instance of `UniformCost`
     #       solve the `small_mda_problem_with_monetary_cost` with it and print the results.
-    exit()  # TODO: remove!
+    uc = UniformCost()
+    res = uc.solve_problem(small_mda_problem_with_monetary_cost)
+    print(res)
 
     # Ex.32
     # TODO: create an instance of `UniformCost`
     #       solve the `moderate_mda_problem_with_monetary_cost` with it and print the results.
+    res = uc.solve_problem(moderate_mda_problem_with_monetary_cost)
+    print(res)
     exit()  # TODO: remove!
 
 

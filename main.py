@@ -184,6 +184,7 @@ def basic_mda_problem_experiments():
     print(res)
 
 
+
 def mda_problem_with_astar_experiments():
 
     print()
@@ -220,7 +221,6 @@ def mda_problem_with_astar_experiments():
 
 
 def mda_problem_with_weighted_astar_experiments():
-
     print()
     print('Solve the MDA problem (small & moderate input, only distance objective, wA*).')
 
@@ -259,7 +259,7 @@ def monetary_cost_objectives_mda_problem_experiments():
     #       solve the `moderate_mda_problem_with_monetary_cost` with it and print the results.
     res = uc.solve_problem(moderate_mda_problem_with_monetary_cost)
     print(res)
-    exit()  # TODO: remove!
+
 
 
 def multiple_objectives_mda_problem_experiments():
@@ -272,6 +272,9 @@ def multiple_objectives_mda_problem_experiments():
     # Ex.35
     # TODO: create an instance of `AStar` with the `MDATestsTravelDistToNearestLabHeuristic`,
     #       solve the `moderate_mda_problem_with_tests_travel_dist_cost` with it and print the results.
+    a_s = AStar(MDATestsTravelDistToNearestLabHeuristic)
+    res = a_s.solve_problem(moderate_mda_problem_with_tests_travel_dist_cost)
+    print(res)
     exit()  # TODO: remove!
 
     # Ex.38

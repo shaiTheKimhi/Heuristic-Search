@@ -11,7 +11,7 @@ __all__ = ['MDAMaxAirDistHeuristic', 'MDASumAirDistHeuristic',
            'MDAMSTAirDistHeuristic', 'MDATestsTravelDistToNearestLabHeuristic']
 
 
-cache = {}
+#cache = {}
 
 
 class MDAMaxAirDistHeuristic(HeuristicFunction):
@@ -116,9 +116,9 @@ class MDASumAirDistHeuristic(HeuristicFunction):
 
         ## TODO: remove the usage of cache here as it was not instructed
         idx = tuple(j.index for j in junctions)
-        global cache
-        if idx in cache.keys():
-            return cache[idx]
+        #global cache
+        #if idx in cache.keys():
+        #    return cache[idx]
 
 
         sum_dist = 0
@@ -134,12 +134,12 @@ class MDASumAirDistHeuristic(HeuristicFunction):
                     min_dist = dist
                     min_jun = nxt
             if min_jun is None:
-                cache[idx] = sum_dist
+                #cache[idx] = sum_dist
                 return sum_dist
             sum_dist += min_dist
             curr_pos = min_jun
 
-        cache[idx] = sum_dist
+        #cache[idx] = sum_dist
         return sum_dist
 
 
@@ -216,10 +216,16 @@ class MDATestsTravelDistToNearestLabHeuristic(HeuristicFunction):
         assert isinstance(self.problem, MDAProblem)
         assert isinstance(state, MDAState)
 
+        problem = self.problem
+
         def air_dist_to_closest_lab(junction: Junction) -> float:
             """
             Returns the distance between `junction` and the laboratory that is closest to `junction`.
             """
-            return min(...)  # TODO: replace `...` with the relevant implementation.
+            return min(self.cached_air_distance_calculator.get_air_distance_between_junctions(junction, lab.location) for lab in problem.problem_input.laboratories)
+            # We return air distance, probably good but might need to replace with real distancec (not probable)
 
-        raise NotImplementedError  # TODO: remove this line!
+        taken_tests = sum(ap.nr_roommates for ap in state.tests_on_ambulance)
+        return sum(ap.nr_roommates * air_dist_to_closest_lab(ap.location) for ap in problem.get_reported_apartments_waiting_to_visit(state))\
+            + taken_tests * air_dist_to_closest_lab(state.current_location)
+

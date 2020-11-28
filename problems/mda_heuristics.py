@@ -223,9 +223,13 @@ class MDATestsTravelDistToNearestLabHeuristic(HeuristicFunction):
             Returns the distance between `junction` and the laboratory that is closest to `junction`.
             """
             return min(self.cached_air_distance_calculator.get_air_distance_between_junctions(junction, lab.location) for lab in problem.problem_input.laboratories)
-            # We return air distance, probably good but might need to replace with real distancec (not probable)
+            # We return air distance, probably good but might need to replace with real distance (not probable)
 
-        taken_tests = sum(ap.nr_roommates for ap in state.tests_on_ambulance)
-        return sum(ap.nr_roommates * air_dist_to_closest_lab(ap.location) for ap in problem.get_reported_apartments_waiting_to_visit(state))\
-            + taken_tests * air_dist_to_closest_lab(state.current_location)
+        #taken_tests = state.get_total_nr_tests_taken_and_stored_on_ambulance()
+        sum = state.get_total_nr_tests_taken_and_stored_on_ambulance() * air_dist_to_closest_lab(state.current_location)
+        for ap in problem.get_reported_apartments_waiting_to_visit(state):
+            sum += ap.nr_roommates * air_dist_to_closest_lab(ap.location)
+        return sum
+        #return sum(ap.nr_roommates * air_dist_to_closest_lab(ap.location) for ap in problem.get_reported_apartments_waiting_to_visit(state))\
+        #    + state.get_total_nr_tests_taken_and_stored_on_ambulance() * air_dist_to_closest_lab(state.current_location)
 

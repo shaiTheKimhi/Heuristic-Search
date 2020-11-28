@@ -71,5 +71,59 @@ class AStarEpsilon(AStar):
          method should be kept in the open queue at the end of this method, except
          for the extracted (and returned) node.
         """
+        if self.open is None or self.open.is_empty():
+            return None
+        lowest = self.open.pop_next_node()
+        lim = (1 + self.focal_epsilon) * lowest.expanding_priority
+        focal = [lowest]
+        max_size = self.max_focal_size is not None
+        while self.open.is_empty() is not True:
+            node = self.open.peek_next_node()
+            if node.expanding_priority > lim:
+                break
+            focal.append(self.open.pop_next_node())
+            if max_size and self.max_focal_size == len(focal):
+                break
 
-        raise NotImplementedError  # TODO: remove!
+        secondary_heuristic = [self.within_focal_priority_function(node, problem, self) for node in focal]
+        min_index = np.argmin(secondary_heuristic)
+        for i in range(len(focal)):
+            if i != min_index:
+                self.open.push_node(focal[i])
+
+        if self.use_close:
+            self.close.add_node(focal[min_index])
+        return focal[min_index]
+
+
+        """
+        if self.open is None or self.open.is_empty():
+            return None
+        max_expanding_priority = (1 + self.focal_epsilon) * self.open.peek_next_node().expanding_priority
+        focal_list = []
+        extracted_nodes_list = []
+        while not self.open.is_empty():
+            curr_node = self.open.pop_next_node()  # get first in queue
+            extracted_nodes_list.append(curr_node)
+            if curr_node.expanding_priority <= max_expanding_priority:  # insert to focal_list
+                focal_list.append(curr_node)
+            else:
+                break  # sorted so we popped all nodes with exp < max_exp
+            if self.max_focal_size is not None and len(focal_list) == self.max_focal_size:
+                break  # not allowed
+
+        # find and return node with minimum within focal priority
+        node_to_expand = min((node for node in focal_list),
+                             key=lambda node: self.within_focal_priority_function(node, problem, self))
+        extracted_nodes_list.remove(node_to_expand)
+
+        for n in extracted_nodes_list:  # re-insert extracted nodes into open
+            self.open.push_node(n)
+
+        if self.use_close:  # a bool that determines if we are using close
+            self.close.add_node(node_to_expand)
+        return node_to_expand
+        """
+
+
+

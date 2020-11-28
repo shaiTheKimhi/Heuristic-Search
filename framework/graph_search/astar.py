@@ -73,12 +73,12 @@ class AStar(BestFirstSearch):
         """
         if self.open.has_state(successor_node.state):
             old = self.open.get_node_by_state(successor_node.state)
-            if successor_node.expanding_priority < old.expanding_priority:
+            if successor_node.g_cost < old.g_cost:
                 self.open.extract_node(old)
                 self.open.push_node(successor_node)
         elif self.close.has_state(successor_node.state):
             old = self.close.get_node_by_state(successor_node.state)
-            if successor_node.expanding_priority < old.expanding_priority:
+            if successor_node.g_cost < old.g_cost:
                 self.close.remove_node(old)
                 self.open.push_node(successor_node)
         else:

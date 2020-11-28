@@ -66,6 +66,18 @@ class AnytimeAStar(GraphProblemSolver):
             low_heuristic_weight = 0.5
             high_heuristic_weight = self.initial_high_heuristic_weight_bound
             while (high_heuristic_weight - low_heuristic_weight) > 0.01:
+                w = (high_heuristic_weight + low_heuristic_weight) / 2
+                a_s = AStar(self.heuristic_function_type, w, self.max_nr_states_to_expand_per_iteration)
+                res = a_s.solve_problem(problem)
+                if not res.is_solution_found:
+                    low_heuristic_weight = w
+                    continue
+                if res.solution_g_cost < best_solution.solution_g_cost:
+                    best_solution = res
+                    best_heuristic_weight = w
+                high_heuristic_weight = w
+
+
                 # TODO [Ex.45]:
                 #  Complete the missing part inside this loop.
                 #  Perform a binary search over the possible values of `heuristic_weight`.
@@ -84,7 +96,8 @@ class AnytimeAStar(GraphProblemSolver):
                 #   obtain the g-cost of a solution). Update iff the current inspected solution cost < the cost of
                 #   the best found solution so far.
                 #  Make sure to also read the big comment in the head of this class.
-                raise NotImplementedError   # TODO: remove this line!
+
+
 
         self.solver_name = f'{self.__class__.solver_name} (h={best_solution.solver.heuristic_function.heuristic_name}, w={best_heuristic_weight:.3f})'
         return best_solution._replace(

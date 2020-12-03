@@ -79,14 +79,17 @@ class AStarEpsilon(AStar):
         max_size = self.max_focal_size is not None
         while self.open.is_empty() is not True:
             node = self.open.peek_next_node()
+            #open is sorted, so if current node expanding priority is larger than limit, we can finish the search
             if node.expanding_priority > lim:
                 break
             focal.append(self.open.pop_next_node())
+            #checking if we use max size and whether our focal is at max size
             if max_size and self.max_focal_size == len(focal):
                 break
-
+        #create heuristic for every node in focal and choose minimum
         secondary_heuristic = [self.within_focal_priority_function(node, problem, self) for node in focal]
         min_index = np.argmin(secondary_heuristic)
+        #return all not selected to open and selected will be added to open
         for i in range(len(focal)):
             if i != min_index:
                 self.open.push_node(focal[i])

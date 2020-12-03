@@ -102,7 +102,7 @@ class MDAState(GraphProblemState):
          Notice that `sum()` can receive an *ITERATOR* as argument; That is, you can simply write something like this:
         >>> sum(<some expression using item> for item in some_collection_of_items)
         """
-        return sum(ap.roomates for ap in self.tests_on_ambulance)
+        return sum(ap.nr_roommates for ap in self.tests_on_ambulance)
 
 
 class MDAOptimizationObjective(Enum):
@@ -216,6 +216,7 @@ class MDAProblem(GraphProblem):
         assert isinstance(state_to_expand, MDAState)
         reported = self.get_reported_apartments_waiting_to_visit(state_to_expand)
         capacity = self.problem_input.ambulance.fridge_capacity * self.problem_input.ambulance.nr_fridges - sum(i.nr_roommates for i in state_to_expand.tests_on_ambulance)
+        #checking all apartments to be visited
         for ap in reported:
             #apartment not visited and could be checked
             if ap.nr_roommates <= capacity and ap.nr_roommates <= state_to_expand.nr_matoshim_on_ambulance \
@@ -226,6 +227,7 @@ class MDAProblem(GraphProblem):
                                      nr_matoshim_on_ambulance=state_to_expand.nr_matoshim_on_ambulance - ap.nr_roommates,
                                      visited_labs=state_to_expand.visited_labs)
                 yield OperatorResult(successor_state=new_state, operator_cost=self.get_operator_cost(state_to_expand, new_state), operator_name=f"visit {ap.reporter_name}")
+        #checking visit in  laboratories
         for lab in self.problem_input.laboratories:
             #indicator for whether lab is visited first time
             i_firstvisit = 1 if lab not in state_to_expand.visited_labs else 0
@@ -269,22 +271,24 @@ class MDAProblem(GraphProblem):
                                 its first `k` items and until the `n`-th item.
             You might find this tip useful for summing a slice of a collection.
         """
-        #some code is over here
-        #could calc only needed optimization self.optimization objective
-
         dist = self.map_distance_finder.get_map_cost_between(prev_state.current_location, succ_state.current_location)
 
-        test_travel = sum(i.nr_roommates for i in prev_state.tests_on_ambulance) * dist
+        test_travel = prev_state.get_total_nr_tests_taken_and_stored_on_ambulance() * dist
 
-        active_fridges = sum(i.nr_roommates for i in prev_state.tests_on_ambulance)/self.problem_input.ambulance.fridge_capacity
+        active_fridges = prev_state.get_total_nr_tests_taken_and_stored_on_ambulance()/self.problem_input.ambulance.fridge_capacity
         active_fridges = int(active_fridges) if active_fridges == int(active_fridges) else int(active_fridges) + 1
         fridges_gas_consumption = sum(self.problem_input.ambulance.fridges_gas_consumption_liter_per_meter[i] for i in range(active_fridges))
+
         i_visit_lab = True if isinstance(succ_state.current_site, Laboratory) else False
-        i_transfer = 1 if prev_state.tests_on_ambulance is not None else 0
-        i_revisit = 1 if succ_state.current_site in prev_state.visited_labs else 0
+
         monetary = self.problem_input.gas_liter_price * (self.problem_input.ambulance.drive_gas_consumption_liter_per_meter + fridges_gas_consumption) * dist
         if i_visit_lab:
-            monetary += (i_transfer * succ_state.current_site.tests_transfer_cost + i_revisit * succ_state.current_site.revisit_extra_cost)
+            if succ_state.current_site in prev_state.visited_labs:
+                monetary += succ_state.current_site.revisit_extra_cost
+            if len(prev_state.tests_on_ambulance) > 0:
+                monetary += succ_state.current_site.tests_transfer_cost
+        #monetary += (i_transfer * succ_state.current_site.tests_transfer_cost + i_revisit * succ_state.current_site.revisit_extra_cost)
+
         return MDACost(
             optimization_objective=self.optimization_objective,
             distance_cost=dist,

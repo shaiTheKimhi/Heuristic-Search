@@ -11,7 +11,6 @@ __all__ = ['MDAMaxAirDistHeuristic', 'MDASumAirDistHeuristic',
            'MDAMSTAirDistHeuristic', 'MDATestsTravelDistToNearestLabHeuristic']
 
 
-cache = {}
 
 
 class MDAMaxAirDistHeuristic(HeuristicFunction):
@@ -101,25 +100,7 @@ class MDASumAirDistHeuristic(HeuristicFunction):
 
         junctions = all_certain_junctions_in_remaining_ambulance_path
         length = len(junctions)
-        """distances = [[(self.cached_air_distance_calculator.get_air_distance_between_junctions(junctions[i], junctions[j]), j) for j in range(length)] for i in range(length)]
-        index = 0
-        sumdist = 0
-        distances = distances[:index] + distances[index + 1:]
-        while distances != []:
-            (dis, index) = min(distances[:][index])
-            sumdist += dis
-            distances = distances[:index] + distances[index + 1:]
-
-        return sumdist
-        """
-
-
-        ## TODO: remove the usage of cache here as it was not instructed
-        idx = tuple(j.index for j in junctions)
-        global cache
-        if idx in cache.keys():
-            return cache[idx]
-
+        
 
         sum_dist = 0
         curr_pos = state.current_site if isinstance(state.current_site, Junction) else state.current_site.location
@@ -127,19 +108,17 @@ class MDASumAirDistHeuristic(HeuristicFunction):
             min_dist = float('inf')
             min_jun = None
             all_certain_junctions_in_remaining_ambulance_path.remove(curr_pos)
-
+            #get closest junction to current junction
             for nxt in all_certain_junctions_in_remaining_ambulance_path:
                 dist = self.cached_air_distance_calculator.get_air_distance_between_junctions(curr_pos, nxt)
                 if dist < min_dist:
                     min_dist = dist
                     min_jun = nxt
             if min_jun is None:
-                cache[idx] = sum_dist
                 return sum_dist
             sum_dist += min_dist
             curr_pos = min_jun
 
-        cache[idx] = sum_dist
         return sum_dist
 
 
@@ -179,14 +158,12 @@ class MDAMSTAirDistHeuristic(HeuristicFunction):
               `.size(weight='weight')`. Do not manually sum the edges' weights.
         """
         g = nx.Graph().to_undirected()
-
         for j1 in junctions:
-            junctions.remove(j1)
             for j2 in junctions:
-                g.add_edge(j1, j2, weight=self.cached_air_distance_calculator.get_air_distance_between_junctions(j1, j2))
+                if j1 != j2:
+                    g.add_edge(j1, j2, weight=self.cached_air_distance_calculator.get_air_distance_between_junctions(j1, j2))
+        return nx.minimum_spanning_tree(g).size(weight='weight')
 
-        a = nx.minimum_spanning_tree(g).size(weight='weight')
-        return a
 
 
 class MDATestsTravelDistToNearestLabHeuristic(HeuristicFunction):
@@ -216,10 +193,16 @@ class MDATestsTravelDistToNearestLabHeuristic(HeuristicFunction):
         assert isinstance(self.problem, MDAProblem)
         assert isinstance(state, MDAState)
 
+        problem = self.problem
+
         def air_dist_to_closest_lab(junction: Junction) -> float:
             """
             Returns the distance between `junction` and the laboratory that is closest to `junction`.
             """
-            return min(...)  # TODO: replace `...` with the relevant implementation.
+            return min(self.cached_air_distance_calculator.get_air_distance_between_junctions(junction, lab.location) for lab in problem.problem_input.laboratories)
+            # We return air distance, probably good but might need to replace with real distance (not probable)
 
-        raise NotImplementedError  # TODO: remove this line!
+        #taken_tests = state.get_total_nr_tests_taken_and_stored_on_ambulance()
+        return sum(ap.nr_roommates * air_dist_to_closest_lab(ap.location) for ap in problem.get_reported_apartments_waiting_to_visit(state))\
+            + state.get_total_nr_tests_taken_and_stored_on_ambulance() * air_dist_to_closest_lab(state.current_location)
+

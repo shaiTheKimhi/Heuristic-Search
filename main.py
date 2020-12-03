@@ -347,19 +347,19 @@ def mda_problem_anytime_astar_experiments():
     # TODO: create an instance of `AnytimeAStar` once with the `MDAMSTAirDistHeuristic`, with
     #       `max_nr_states_to_expand_per_iteration` set to 1000, solve the
     #       `moderate_mda_problem_with_distance_cost` with it and print the results.
-    any_as = AnytimeAStar(MDAMSTAirDistHeuristic, 1000)
-    res = any_as.solve_problem(moderate_mda_problem_with_distance_cost)
+    any_as = AnytimeAStar(heuristic_function_type=MDAMSTAirDistHeuristic, max_nr_states_to_expand_per_iteration=1000)
+    res = any_as.solve_problem(problem=moderate_mda_problem_with_distance_cost)
     print(res)
 
 
 def run_all_experiments():
     print('Running all experiments')
     toy_map_problem_experiments()
-    basic_mda_problem_experiments()
-    #mda_problem_with_astar_experiments()
-    #mda_problem_with_weighted_astar_experiments()
+    #basic_mda_problem_experiments()
+    ##mda_problem_with_astar_experiments()
+    ##mda_problem_with_weighted_astar_experiments()
     #monetary_cost_objectives_mda_problem_experiments()
-    multiple_objectives_mda_problem_experiments()
+    #multiple_objectives_mda_problem_experiments()
     mda_problem_with_astar_epsilon_experiments()
     mda_problem_anytime_astar_experiments()
 

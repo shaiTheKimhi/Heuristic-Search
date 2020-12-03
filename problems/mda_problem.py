@@ -216,6 +216,7 @@ class MDAProblem(GraphProblem):
         assert isinstance(state_to_expand, MDAState)
         reported = self.get_reported_apartments_waiting_to_visit(state_to_expand)
         capacity = self.problem_input.ambulance.fridge_capacity * self.problem_input.ambulance.nr_fridges - sum(i.nr_roommates for i in state_to_expand.tests_on_ambulance)
+        #checking all apartments to be visited
         for ap in reported:
             #apartment not visited and could be checked
             if ap.nr_roommates <= capacity and ap.nr_roommates <= state_to_expand.nr_matoshim_on_ambulance \
@@ -226,6 +227,7 @@ class MDAProblem(GraphProblem):
                                      nr_matoshim_on_ambulance=state_to_expand.nr_matoshim_on_ambulance - ap.nr_roommates,
                                      visited_labs=state_to_expand.visited_labs)
                 yield OperatorResult(successor_state=new_state, operator_cost=self.get_operator_cost(state_to_expand, new_state), operator_name=f"visit {ap.reporter_name}")
+        #checking visit in  laboratories
         for lab in self.problem_input.laboratories:
             #indicator for whether lab is visited first time
             i_firstvisit = 1 if lab not in state_to_expand.visited_labs else 0

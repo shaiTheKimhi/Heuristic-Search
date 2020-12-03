@@ -67,15 +67,20 @@ class AnytimeAStar(GraphProblemSolver):
             high_heuristic_weight = self.initial_high_heuristic_weight_bound
             while (high_heuristic_weight - low_heuristic_weight) > 0.01:
                 w = (high_heuristic_weight + low_heuristic_weight) / 2
-                a_s = AStar(self.heuristic_function_type, w, self.max_nr_states_to_expand_per_iteration)
+                a_s = AStar(heuristic_function_type=self.heuristic_function_type, heuristic_weight=w, max_nr_states_to_expand=self.max_nr_states_to_expand_per_iteration)
                 res = a_s.solve_problem(problem)
+
+                total_nr_expanded_states += res.nr_expanded_states
+                max_nr_stored_states = max(max_nr_stored_states, res.max_nr_stored_states)
+
                 if not res.is_solution_found:
                     low_heuristic_weight = w
-                    continue
-                if res.solution_g_cost < best_solution.solution_g_cost:
-                    best_solution = res
-                    best_heuristic_weight = w
-                high_heuristic_weight = w
+                else:
+                    if res.solution_g_cost < best_solution.solution_g_cost:
+                        best_solution = res
+                        best_heuristic_weight = w
+                    high_heuristic_weight = w
+
 
 
                 # TODO [Ex.45]:

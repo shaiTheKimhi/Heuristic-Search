@@ -74,11 +74,7 @@ class MDAState(GraphProblemState):
         """
         assert isinstance(other, MDAState)
 
-        # TODO [Ex.17]: Complete the implementation of this method!
-        #  Note that you can simply compare two instances of `Junction` type
-        #   (using equals `==` operator) because the class `Junction` explicitly
-        #   implements the `__eq__()` method. The types `frozenset`, `ApartmentWithSymptomsReport`, `Laboratory`
-        #   are also comparable (in the same manner).
+     
 
         return self.current_site == other.current_site and self.tests_on_ambulance == other.tests_on_ambulance and self.tests_transferred_to_lab == other.tests_transferred_to_lab \
             and self.nr_matoshim_on_ambulance == other.nr_matoshim_on_ambulance and self.visited_labs == other.visited_labs
@@ -96,11 +92,6 @@ class MDAState(GraphProblemState):
     def get_total_nr_tests_taken_and_stored_on_ambulance(self) -> int:
         """
         This method returns the total number of of tests that are stored on the ambulance in this state.
-        TODO [Ex.17]: Implement this method.
-         Notice that this method can be implemented using a single line of code - do so!
-         Use python's built-it `sum()` function.
-         Notice that `sum()` can receive an *ITERATOR* as argument; That is, you can simply write something like this:
-        >>> sum(<some expression using item> for item in some_collection_of_items)
         """
         return sum(ap.nr_roommates for ap in self.tests_on_ambulance)
 
@@ -186,7 +177,6 @@ class MDAProblem(GraphProblem):
 
     def expand_state_with_costs(self, state_to_expand: GraphProblemState) -> Iterator[OperatorResult]:
         """
-        TODO [Ex.17]: Implement this method!
         This method represents the `Succ: S -> P(S)` function of the MDA problem.
         The `Succ` function is defined by the problem operators as shown in class.
         The MDA problem operators are defined in the assignment instructions.
@@ -245,31 +235,6 @@ class MDAProblem(GraphProblem):
         """
         Calculates the operator cost (of type `MDACost`) of an operator (moving from the `prev_state`
          to the `succ_state`). The `MDACost` type is defined above in this file (with explanations).
-        Use the formal MDA problem's operator costs definition presented in the assignment-instructions.
-        TODO [Ex.17]: implement this method!
-        Use the method `self.map_distance_finder.get_map_cost_between()` to calculate the distance
-         between to junctions. This distance is used for calculating the 3 costs.
-        If the location of the next state is not reachable (on the streets-map) from the location of
-         the previous state, use the value of `float('inf')` for all costs.
-        You might want to use the method `MDAState::get_total_nr_tests_taken_and_stored_on_ambulance()`
-         both for the tests-travel and the monetary costs.
-        For the monetary cost you might want to use the following fields:
-         `self.problem_input.ambulance.drive_gas_consumption_liter_per_meter`
-         `self.problem_input.gas_liter_price`
-         `self.problem_input.ambulance.fridges_gas_consumption_liter_per_meter`
-         `self.problem_input.ambulance.fridge_capacity`
-         `MDAState::get_total_nr_tests_taken_and_stored_on_ambulance()`
-        For calculating the #active-fridges (the monetary cost) you might want to use the
-         function `math.ceil(some_float_value)`.
-        Note: For calculating sum of a collection (list/tuple/set) in python, you can simply
-         use `sum(some_collection)`.
-        Note: For getting a slice of an tuple/list in python you can use slicing indexing. examples:
-            `some_tuple[:k]` - would create a new tuple with the first `k` elements of `some_tuple`.
-            `some_tuple[k:]` - would create a new tuple that is based on `some_tuple` but without
-                               its first `k` items.
-            `some_tuple[k:n]` - would create a new tuple that is based on `some_tuple` but without
-                                its first `k` items and until the `n`-th item.
-            You might find this tip useful for summing a slice of a collection.
         """
         dist = self.map_distance_finder.get_map_cost_between(prev_state.current_location, succ_state.current_location)
 
@@ -298,9 +263,6 @@ class MDAProblem(GraphProblem):
     def is_goal(self, state: GraphProblemState) -> bool:
         """
         This method receives a state and returns whether this state is a goal.
-        TODO [Ex.17]: implement this method using a single `return` line!
-         Use sets/frozensets comparison (`some_set == some_other_set`).
-         In order to create a set from some other collection (list/tuple) you can just `set(some_other_collection)`.
         """
         assert isinstance(state, MDAState)
         #recheck
@@ -310,10 +272,7 @@ class MDAProblem(GraphProblem):
 
     def get_zero_cost(self) -> Cost:
         """
-        Overridden method of base class `GraphProblem`. For more information, read
-         documentation in the default implementation of this method there.
-        In this problem the accumulated cost is not a single float scalar, but an
-         extended cost, which actually includes 2 scalar costs.
+        Overridden method of base class `GraphProblem`.
         """
         return MDACost(optimization_objective=self.optimization_objective)
 
@@ -322,16 +281,6 @@ class MDAProblem(GraphProblem):
         This method returns a list of all reported-apartments that haven't been visited yet.
         For the sake of determinism considerations, the returned list has to be sorted by
          the apartment's report id in an ascending order.
-        TODO [Ex.17]: Implement this method.
-            Use sets difference operation (`some_set - some_other_set`).
-            Use `list(some_set)` to create a list from some given set, and then use
-                `some_list_instance.sort(key=...)` to sort this list. Use a `lambda`
-                function for the sorting `key` parameter. You can read about it and
-                see examples in the internet.
-            Note: Given a collection of items, you can create a new set of these items simply by
-                `set(my_collection_of_items)`. Then you can use set operations over this newly
-                generated set.
-            Note: This method can be implemented using a single line of code. Try to do so.
         """
         return [ap for ap in self.problem_input.reported_apartments if ap not in state.tests_on_ambulance and ap not in state.tests_transferred_to_lab]
 
@@ -341,9 +290,6 @@ class MDAProblem(GraphProblem):
         This includes the ambulance's current location, and the locations of the reported apartments
          that hasn't been visited yet.
         The list should be ordered by the junctions index ascendingly (small to big).
-        TODO [Ex.21]: Implement this method.
-            Use the method `self.get_reported_apartments_waiting_to_visit(state)`.
-            Use python's `sorted(some_list, key=...)` function.
         """
         if isinstance(state.current_site, Junction):
             return sorted([state.current_site] + [ap.location for ap in self.get_reported_apartments_waiting_to_visit(state)], key=lambda j: j.index)

@@ -45,9 +45,7 @@ class AStar(BestFirstSearch):
         Should calculate and return the f-score of the given node.
         This score is used as a priority of this node in the open priority queue.
 
-        TODO [Ex.11]: implement this method.
         Remember: In Weighted-A* the f-score is defined by ((1-w) * cost) + (w * h(state)).
-        Notice: You may use `search_node.g_cost`, `self.heuristic_weight`, and `self.heuristic_function`.
         """
         return (1-self.heuristic_weight)*search_node.g_cost + self.heuristic_weight*self.heuristic_function.estimate(search_node.state)
 
@@ -59,15 +57,8 @@ class AStar(BestFirstSearch):
         This method is responsible for adding this just-created successor
          node into the `self.open` priority queue, and may check the existence
          of another node representing the same state in `self.close`.
-
-        TODO [Ex.11]: implement this method.
         Have a look at the pseudo-code shown in class for A*. Here you should implement the same in python.
         Have a look at the implementation of `BestFirstSearch` to have better understanding.
-        Use `self.open` (SearchNodesPriorityQueue) and `self.close` (SearchNodesCollection) data structures.
-        These data structures are implemented in `graph_search/best_first_search.py`.
-        Note: The successor_node's g-score is stored under `node.g_cost`. Use it to test whether a better
-              solution is found, as done in the pseudo-code taught in class (better solution has a strictly
-              smaller g-score).
         Remember: In A*, in contrast to uniform-cost, a successor state might have an already closed node,
                   but still could be improved.
         """

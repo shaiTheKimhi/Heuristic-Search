@@ -28,20 +28,6 @@ class MDAMaxAirDistHeuristic(HeuristicFunction):
          by calculating the maximum distance within the group of air distances between each two
          junctions in the remaining ambulance path. We don't consider laboratories here because we
          do not know what laboratories would be visited in an optimal solution.
-
-        TODO [Ex.21]:
-            Calculate the `total_distance_lower_bound` by taking the maximum over the group
-                {airDistanceBetween(j1,j2) | j1,j2 in CertainJunctionsInRemainingAmbulancePath s.t. j1 != j2}
-            Notice: The problem is accessible via the `self.problem` field.
-            Use `self.cached_air_distance_calculator.get_air_distance_between_junctions()` for air
-                distance calculations.
-            Use python's built-in `max()` function. Note that `max()` can receive an *ITERATOR*
-                and return the item with the maximum value within this iterator.
-            That is, you can simply write something like this:
-        >>> max(<some expression using item1 & item2>
-        >>>     for item1 in some_items_collection
-        >>>     for item2 in some_items_collection
-        >>>     if <some condition over item1 & item2>)
         """
 
         assert isinstance(self.problem, MDAProblem)
@@ -76,16 +62,7 @@ class MDASumAirDistHeuristic(HeuristicFunction):
         Note that we ignore here the problem constraints (like enforcing the #matoshim and free
          space in the ambulance's fridge). We only make sure to visit all certain junctions in
          `all_certain_junctions_in_remaining_ambulance_path`.
-        TODO [Ex.24]:
-            Complete the implementation of this method.
-            Use `self.cached_air_distance_calculator.get_air_distance_between_junctions()` for air
-             distance calculations.
-            For determinism, while building the path, when searching for the next nearest junction,
-             use the junction's index as a secondary grading factor. So that if there are 2 different
-             junctions with the same distance to the last junction of the so-far-built path, the
-             junction to be chosen is the one with the minimal index.
-            You might want to use python's tuples comparing to that end.
-             Example: (a1, a2) < (b1, b2) iff a1 < b1 or (a1 == b1 and a2 < b2).
+
         """
         assert isinstance(self.problem, MDAProblem)
         assert isinstance(state, MDAState)
@@ -145,18 +122,6 @@ class MDAMSTAirDistHeuristic(HeuristicFunction):
             self.problem.get_all_certain_junctions_in_remaining_ambulance_path(state))
 
     def _calculate_junctions_mst_weight_using_air_distance(self, junctions: List[Junction]) -> float:
-        """
-        TODO [Ex.27]: Implement this method.
-              Use `networkx` (nx) package (already imported in this file) to calculate the weight
-               of the minimum-spanning-tree of the graph in which the vertices are the given junctions
-               and there is an edge between each pair of distinct junctions (no self-loops) for which
-               the weight is the air distance between these junctions.
-              Use the method `self.cached_air_distance_calculator.get_air_distance_between_junctions()`
-               to calculate the air distance between the two junctions.
-              Google for how to use `networkx` package for this purpose.
-              Use `nx.minimum_spanning_tree()` to get an MST. Calculate the MST size using the method
-              `.size(weight='weight')`. Do not manually sum the edges' weights.
-        """
         g = nx.Graph().to_undirected()
         for j1 in junctions:
             for j2 in junctions:
@@ -186,9 +151,6 @@ class MDATestsTravelDistToNearestLabHeuristic(HeuristicFunction):
         The rest part of the total remained cost includes the distance between each non-visited reported-apartment
          and the closest lab (to this apartment) times the roommates in this apartment (as we take tests for all
          roommates).
-        TODO [Ex.33]:
-            Complete the implementation of this method.
-            Use `self.problem.get_reported_apartments_waiting_to_visit(state)`.
         """
         assert isinstance(self.problem, MDAProblem)
         assert isinstance(state, MDAState)

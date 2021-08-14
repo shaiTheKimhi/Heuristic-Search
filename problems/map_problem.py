@@ -57,17 +57,6 @@ class MapProblem(GraphProblem):
         for other in junction.all_connected_links:
             yield OperatorResult(successor_state=MapState(other.target), operator_cost=other.distance)
 
-        # TODO [Ex.10]:
-        #  Read the documentation of this method in the base class `GraphProblem.expand_state_with_costs()`.
-        #  Finish the implementation of this method.
-        #  Iterate over the outgoing links of the current junction (find the implementation of `Junction`
-        #  type to see the exact field name to access the outgoing links). For each link:
-        #    (1) Create the successor state (it should be an instance of class `MapState`). This state represents the
-        #        target junction of the current link;
-        #    (2) Yield an object of type `OperatorResult` with the successor state and the operator cost (which is
-        #        `link.distance`). You don't have to specify the operator name here.
-        #  Note: Generally, in order to check whether a variable is set to None you should use the expression:
-        #        `my_variable_to_check is None`, and particularly do NOT use comparison (==).
 
     def is_goal(self, state: GraphProblemState) -> bool:
         """
@@ -75,6 +64,5 @@ class MapProblem(GraphProblem):
         """
         assert (isinstance(state, MapState))
 
-        # TODO [Ex.10]: modify the returned value to indicate whether `state` is a final state.
         # You may use the problem's input parameters (stored as fields of this object by the constructor).
-        return state.junction_id == self.target_junction_id  # TODO: modify this!
+        return state.junction_id == self.target_junction_id
